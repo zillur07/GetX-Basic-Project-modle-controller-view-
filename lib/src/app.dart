@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'controllers/product_controller.dart';
 import 'pages/product_page.dart';
 
 class App extends StatelessWidget {
@@ -8,9 +9,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Register Controller before ProductPage
+    Get.put(ProductController(), permanent: true);
+
     return GetMaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      debugShowCheckedModeBanner: false,
       home: ProductPage(),
     );
   }

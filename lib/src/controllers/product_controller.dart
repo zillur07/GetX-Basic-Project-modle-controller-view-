@@ -5,6 +5,11 @@ class ProductController extends GetxController {
   /// A list of products observed by the controller
   // var productList = <ProductModel>[].obs;
   var productList = RxList<ProductModel>([]);
+  // Cart Products
+  var cartList = <ProductModel>[].obs;
+
+  // Wishlist Products
+  var wishlist = <ProductModel>[].obs;
 
   @override
   void onInit() {
@@ -88,5 +93,49 @@ class ProductController extends GetxController {
         image: 'https://picsum.photos/id/10/300/300',
       ),
     ];
+  }
+
+  // Add To Cart
+  void addToCart(ProductModel product) {
+    bool exists = cartList.any((e) => e.id == product.id);
+
+    if (exists) {
+      Get.snackbar('Cart', 'Already added to cart');
+    } else {
+      cartList.add(product);
+      Get.snackbar('Success', 'Product added to cart');
+    }
+  }
+
+  // Remove From Cart
+  void removeFromCart(ProductModel product) {
+    cartList.removeWhere((e) => e.id == product.id);
+  }
+
+  // Add To Wishlist
+  void addToWishlist(ProductModel product) {
+    bool exists = wishlist.any((e) => e.id == product.id);
+
+    if (exists) {
+      Get.snackbar('Wishlist', 'Already added');
+    } else {
+      wishlist.add(product);
+      Get.snackbar('Success', 'Added to wishlist');
+    }
+  }
+
+  // Remove From Wishlist
+  void removeFromWishlist(ProductModel product) {
+    wishlist.removeWhere((e) => e.id == product.id);
+  }
+
+  // Check Wishlist
+  bool isWishlisted(ProductModel product) {
+    return wishlist.any((e) => e.id == product.id);
+  }
+
+  // Total Price
+  double get totalPrice {
+    return cartList.fold(0, (sum, product) => sum + product.price);
   }
 }

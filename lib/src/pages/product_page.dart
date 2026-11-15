@@ -1,23 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_model_class_app/src/pages/product_details_page.dart';
+import 'package:flutter_model_class_app/src/pages/cart_page.dart';
+import 'package:flutter_model_class_app/src/pages/wish_list_page.dart';
 import 'package:get/get.dart';
 
 import '../controllers/product_controller.dart';
+import 'product_details_page.dart';
 
 class ProductPage extends StatelessWidget {
   ProductPage({super.key});
 
-  final ProductController productController = Get.put(ProductController());
+  final controller = Get.find<ProductController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Products'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('My Shop'),
+        actions: [
+          // Wishlist Icon
+          Obx(
+            () => IconButton(
+              onPressed: () {
+                Get.to(() => WishlistPage());
+              },
+              icon: Badge(
+                label: Text('${controller.wishlist.length}'),
+                child: const Icon(Icons.favorite),
+              ),
+            ),
+          ),
 
-      body: Obx(() {
-        return GridView.builder(
+          // Cart Icon
+          Obx(
+            () => IconButton(
+              onPressed: () {
+                Get.to(() => CartPage());
+              },
+              icon: Badge(
+                label: Text('${controller.cartList.length}'),
+                child: const Icon(Icons.shopping_cart),
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      body: Obx(
+        () => GridView.builder(
           padding: const EdgeInsets.all(12),
-          itemCount: productController.productList.length,
+          itemCount: controller.productList.length,
 
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -27,23 +58,23 @@ class ProductPage extends StatelessWidget {
           ),
 
           itemBuilder: (context, index) {
-            final product = productController.productList[index];
+            final product = controller.productList[index];
 
             return GestureDetector(
               onTap: () {
-                //Get.to(() => ProductDetailsPage(product: product));
+                Get.to(() => ProductDetailsPage(product: product));
               },
 
               child: Card(
-                elevation: 3,
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: SizedBox(
+                      child: Image.network(
+                        product.image,
                         width: double.infinity,
-                        child: Image.network(product.image, fit: BoxFit.cover),
+                        fit: BoxFit.cover,
                       ),
                     ),
 
@@ -52,57 +83,27 @@ class ProductPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Center(
-                            child: Text(
-                              product.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                          Text(
+                            product.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
                           ),
 
                           const SizedBox(height: 5),
 
-                          Center(
-                            child: Text(
-                              textAlign: TextAlign.center,
-                              '৳ ${product.price}',
-                              style: const TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          Text(
+                            '৳ ${product.price}',
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
 
                           const SizedBox(height: 5),
 
-                          InkWell(
-                            onTap: () {
-                              Get.to(
-                                () => ProductDetailsPage(product: product),
-                              );
-                            },
-                            child: Center(
-                              child: Container(
-                                margin: const EdgeInsets.only(top: 5),
-                                decoration: BoxDecoration(
-                                  color: Colors.teal,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'View Details',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          const Text('View Details'),
                         ],
                       ),
                     ),
@@ -111,8 +112,8 @@ class ProductPage extends StatelessWidget {
               ),
             );
           },
-        );
-      }),
+        ),
+      ),
     );
   }
 }
